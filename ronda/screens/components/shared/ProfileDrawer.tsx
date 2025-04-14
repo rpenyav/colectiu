@@ -4,6 +4,7 @@ import { stylesDrawer } from "../../../styles/styles";
 import { ProfileDrawerProps } from "../../../interfaces/interfaces";
 import { useUser } from "../../../context/UserContext";
 import { useAuth } from "../../../auth/context/AuthContext";
+import useTranslation from "../../../i18n/useTranslation";
 
 // Imágenes predeterminadas
 const noback = require("../../../assets/noback.png");
@@ -11,12 +12,8 @@ const noavatar = require("../../../assets/noavatar.png");
 
 export default function ProfileDrawer({ backgroundImage }: ProfileDrawerProps) {
   const { user, loading, avatarUri } = useUser();
+  const { t } = useTranslation();
   const { token } = useAuth();
-
-  // Logs para depurar
-  console.log("ProfileDrawer - Loading:", loading);
-  console.log("ProfileDrawer - User:", user);
-  console.log("ProfileDrawer - Avatar URI:", avatarUri);
 
   return (
     <View style={stylesDrawer.containerProfileImage}>

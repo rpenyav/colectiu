@@ -16,17 +16,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Cargar el token al iniciar la app
   useEffect(() => {
-    console.log("AuthContext - useEffect - Starting token load");
     const loadToken = async () => {
       try {
         const storedToken = await Storage.getItem("authToken");
         if (storedToken) {
-          console.log("AuthContext - Token loaded:", storedToken);
           setToken(storedToken);
           setIsLogged(true);
-          console.log("AuthContext - isLogged set to true");
         } else {
-          console.log("AuthContext - No token found");
           setToken(null);
           setIsLogged(false);
         }
@@ -41,12 +37,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (newToken: string) => {
-    console.log("AuthContext - Logging in with token:", newToken);
     try {
       await Storage.setItem("authToken", newToken);
       setToken(newToken);
       setIsLogged(true);
-      console.log("AuthContext - isLogged set to true after login");
     } catch (error) {
       console.error("AuthContext - Error saving token:", error);
       throw error;
@@ -54,19 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    console.log("AuthContext - Logging out");
     try {
       await Storage.deleteItem("authToken");
       setToken(null);
       setIsLogged(false);
-      console.log("AuthContext - isLogged set to false after logout");
     } catch (error) {
       console.error("AuthContext - Error removing token:", error);
       throw error;
     }
   };
-
-  console.log("AuthContext - Current state:", { token, isLogged });
 
   const contextValue = React.useMemo(
     () => ({ isLogged, token, login, logout }),

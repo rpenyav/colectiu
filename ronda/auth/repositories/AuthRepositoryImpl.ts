@@ -12,15 +12,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         body: JSON.stringify({ username, password }),
       });
 
-      // Depurar la respuesta del servidor
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers.get("Content-Type"));
-      console.log(
-        "Authorization header:",
-        response.headers.get("Authorization")
-      );
       const responseText = await response.text();
-      console.log("Response body:", responseText);
 
       // Manejar códigos de estado
       if (response.status === 401) {

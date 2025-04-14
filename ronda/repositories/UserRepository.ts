@@ -13,21 +13,16 @@ export function useUserRepository() {
   const { token } = useAuth();
 
   const getUserById = async (userId: number): Promise<User> => {
-    console.log("UserRepository - getUserById - userId:", userId);
-    console.log("UserRepository - getUserById - URL:", `${USER_URL}/${userId}`);
     try {
       const response = await fetchWithAuth(`${USER_URL}/${userId}`, {
         method: "GET",
       });
-      console.log(
-        "UserRepository - getUserById - Response status:",
-        response.status
-      );
+
       if (!response.ok) {
         throw new Error(`Failed to fetch user: ${response.status}`);
       }
       const userData: User = await response.json();
-      console.log("UserRepository - getUserById - Parsed userData:", userData);
+
       return userData;
     } catch (error) {
       console.error(
@@ -39,30 +34,23 @@ export function useUserRepository() {
   };
 
   const getUserAvatar = async (userId: number): Promise<string | null> => {
-    console.log("UserRepository - getUserAvatar - userId:", userId);
     const url = USER_AVATAR_URL.replace(":userId", userId.toString());
-    console.log("UserRepository - getUserAvatar - URL:", url);
-    console.log("UserRepository - getUserAvatar - Token:", token);
+
     try {
       const response = await fetchWithAuth(url, {
         method: "GET",
       });
-      console.log(
-        "UserRepository - getUserAvatar - Response status:",
-        response.status
-      );
+
       if (!response.ok) {
         throw new Error(`Failed to fetch avatar: ${response.status}`);
       }
 
       const blob = await response.blob();
-      console.log("UserRepository - getUserAvatar - Blob:", blob);
 
       const reader = new FileReader();
       return new Promise<string | null>((resolve) => {
         reader.onloadend = () => {
           const base64String = reader.result as string;
-          console.log("UserRepository - getUserAvatar - Base64:", base64String);
           resolve(base64String);
         };
         reader.onerror = () => {

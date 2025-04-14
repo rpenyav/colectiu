@@ -24,7 +24,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lastToken, setLastToken] = useState<string | null>(null);
 
   const getUserIdFromToken = (token: string | null): number | null => {
-    console.log("getUserIdFromToken - Token:", token);
     if (!token) {
       console.log("getUserIdFromToken - No token available");
       return null;
@@ -32,7 +31,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const parts = token.split(".");
-      console.log("getUserIdFromToken - Token parts:", parts);
 
       if (parts.length !== 3) {
         console.log(
@@ -42,16 +40,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       const payloadBase64 = parts[1];
-      console.log("getUserIdFromToken - Payload (base64):", payloadBase64);
 
       const payloadString = atob(payloadBase64);
-      console.log("getUserIdFromToken - Payload (decoded):", payloadString);
 
       const payload = JSON.parse(payloadString);
-      console.log("getUserIdFromToken - Payload (parsed):", payload);
 
       const userId = payload?.userId || null;
-      console.log("getUserIdFromToken - Extracted userId:", userId);
 
       return userId;
     } catch (error) {
@@ -64,7 +58,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     let isMounted = true;
 
     const loadUserData = async () => {
-      console.log("UserProvider - Starting loadUserData");
       if (token === lastToken) {
         console.log("UserProvider - Token has not changed, skipping load");
         return;
@@ -82,16 +75,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      console.log("UserProvider - Token available, loading user data");
       if (isMounted) {
         setLoading(true);
         setError(null);
-        console.log("UserProvider - Set loading to true");
       }
 
       try {
         const userId = getUserIdFromToken(token);
-        console.log("UserProvider - userId:", userId);
 
         if (!userId) {
           throw new Error("No se pudo obtener el userId del token");
@@ -99,11 +89,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Cargar los datos del usuario
         const userData = await fetchUserData();
-        console.log("UserProvider - Fetched userData:", userData);
 
         // Cargar el avatar
         const avatar = await fetchUserAvatar();
-        console.log("UserProvider - Fetched avatar:", avatar);
 
         if (isMounted) {
           setUser(userData);
@@ -127,7 +115,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       } finally {
         if (isMounted) {
           setLoading(false);
-          console.log("UserProvider - Set loading to false");
         }
       }
     };
@@ -138,15 +125,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       isMounted = false;
     };
   }, [token, fetchUserData, fetchUserAvatar]);
-
-  console.log("UserProvider - State:", {
-    user,
-    loading,
-    error,
-    avatarUri,
-    token,
-    lastToken,
-  });
 
   const contextValue = React.useMemo(
     () => ({ user, loading, error, avatarUri }),

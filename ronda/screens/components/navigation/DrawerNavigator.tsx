@@ -94,9 +94,7 @@ export default function DrawerNavigator() {
   const navigation = useNavigation<StackNavigationProp<StackParamListDrawer>>();
 
   useEffect(() => {
-    console.log("DrawerNavigator - isLogged:", isLogged);
     if (!isLogged) {
-      console.log("DrawerNavigator - Redirecting to Login");
       navigation.replace("Login");
     }
   }, [isLogged, navigation]);

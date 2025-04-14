@@ -1,0 +1,16 @@
+{
+    "welcome": "Explora aquesta app en català",
+    "loading": "Carregant...",
+    "user_not_available": "Usuari no disponible",
+    "profile": "Perfil de l'Usuari",
+    "username": "Usuari",
+    "name": "Nom",
+    "surname": "Cognom",
+    "security_profile": "Perfil de Seguretat",
+    "address": "Adreça",
+    "address_not_available": "Adreça no disponible",
+    "logout": "Tancar Sessió",
+    "are_you_sure_logout": "Estàs segur que vols tancar la sessió?",
+    "cancel": "Cancel·lar",
+    "yes": "Sí"
+}
