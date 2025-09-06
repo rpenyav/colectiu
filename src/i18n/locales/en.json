@@ -1,0 +1,18 @@
+{
+    "common": {
+        "continue": "Continue"
+    },
+    "splash": {
+        "loading": "Loading…"
+    },
+    "start": {
+        "title": "Identity validation",
+        "dni_placeholder": "Enter your ID (DNI)",
+        "validate": "Validate ID"
+    },
+    "results": {
+        "can_login_title": "You can log in",
+        "needs_lopd_title": "LOPD acceptance required",
+        "create_user_title": "Create user"
+    }
+}

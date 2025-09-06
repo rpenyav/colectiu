@@ -1,0 +1,55 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node modules
+node_modules/
+
+# Expo
+.expo/
+.expo-shared/
+
+# React Native
+ios/Pods/
+*.xcodeproj/*
+!*.pbxproj
+android/.gradle/
+android/app/build/
+android/build/
+
+# Bundler / builds
+dist/
+build/
+web-build/
+
+# Babel / Metro / Cache
+.cache/
+.vscode/
+.expo/*
+.expo-shared/*
+.expo/web/
+.expo/packager-info.json
+.expo/settings.json
+.expo/dev-tools.json
+.packager
+.packager-info.json
+.expo/*
+metro-cache/
+.expo/cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# dotenv
+.env
+.env.*.local
+!.env.example
+!.env.template
+
+# macOS
+.DS_Store
+.AppleDouble
+.LS

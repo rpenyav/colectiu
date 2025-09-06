@@ -1,0 +1,18 @@
+{
+    "common": {
+        "continue": "Continuar"
+    },
+    "splash": {
+        "loading": "Carregant…"
+    },
+    "start": {
+        "title": "Validació d'identitat",
+        "dni_placeholder": "Introdueix el teu DNI",
+        "validate": "Validar DNI"
+    },
+    "results": {
+        "can_login_title": "Pots iniciar sessió",
+        "needs_lopd_title": "Cal acceptar la LOPD",
+        "create_user_title": "Crear usuari"
+    }
+}
