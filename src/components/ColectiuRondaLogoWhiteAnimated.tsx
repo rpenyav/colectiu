@@ -1,21 +1,7 @@
-// src/screens/ColectiuRondaLogoWhiteAnimated.tsx
-import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import {
-  Canvas,
-  Group,
-  Rect,
-  Mask,
-  useSVG,
-  ImageSVG, // 👈 IMPORTANTE
-} from "@shopify/react-native-skia";
-import {
-  Easing,
-  useSharedValue,
-  withTiming,
-  useAnimatedReaction,
-  runOnJS,
-} from "react-native-reanimated";
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, View, Platform, Dimensions, Text } from "react-native";
+import LottieView from "lottie-react-native";
+import animationData from "../../colectiu_ronda_animation.json"; // Ajusta la ruta
 
 type Props = {
   onDone?: () => void;
@@ -24,160 +10,67 @@ type Props = {
   duration?: number; // ms
 };
 
-const { width: W } = Dimensions.get("window");
-
-// SVG en string
-const COLECTIU_RONDA_SVG = `
-<svg viewBox="0 0 200 20" width="200" height="20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Colectiu Ronda">
-  <polygon fill="#ffffff" points="12.68,14.78 19.59,18.61 28.48,18.61 22.07,14.78 31.3,11.24 31.18,2.02 6.89,11.97 6.77,10.96 
-    17.29,6.52 17.29,1.96 10.32,5.28 10.32,2.02 7.96,3.08 7.96,6.18 1.04,9.16 1.04,18.61 25.45,7.98 25.45,9.16"/>
-  <path fill="#ffffff" d="M37.83,16.36c1.36,1.44,3.09,2.16,5.2,2.16c1.7,0,3.11-0.42,4.22-1.26c1.11-0.84,1.9-2.13,2.38-3.86l-3.11-0.98
-    c-0.27,1.16-0.71,2.01-1.32,2.55c-0.61,0.54-1.34,0.81-2.2,0.81c-1.15,0-2.09-0.42-2.81-1.28c-0.72-0.85-1.08-2.28-1.08-4.29
-    c0-1.89,0.36-3.26,1.1-4.1c0.73-0.84,1.69-1.27,2.86-1.27c0.85,0,1.58,0.24,2.17,0.72c0.6,0.48,0.99,1.13,1.17,1.95l3.17-0.76
-    c-0.36-1.27-0.9-2.24-1.63-2.92c-1.21-1.15-2.79-1.72-4.73-1.72c-2.22,0-4.02,0.73-5.38,2.19c-1.37,1.46-2.05,3.51-2.05,6.15
-    C35.8,12.95,36.48,14.92,37.83,16.36z"/>
-  <path fill="#ffffff" d="M61.12,8.19C60,7.06,58.58,6.49,56.84,6.49c-1.13,0-2.15,0.25-3.06,0.74c-0.91,0.5-1.62,1.22-2.12,2.17
-    c-0.5,0.95-0.75,1.92-0.75,2.93c0,1.32,0.25,2.44,0.75,3.36c0.5,0.92,1.23,1.62,2.18,2.09c0.96,0.48,1.96,0.71,3.01,0.71
-    c1.7,0,3.11-0.57,4.24-1.72c1.12-1.14,1.68-2.59,1.68-4.32C62.78,10.75,62.23,9.32,61.12,8.19z M58.85,15.12
-    c-0.54,0.61-1.2,0.91-2,0.91c-0.79,0-1.46-0.3-2-0.91c-0.54-0.61-0.81-1.48-0.81-2.62c0-1.14,0.27-2.01,0.81-2.62
-    c0.54-0.61,1.21-0.91,2-0.91c0.79,0,1.46,0.3,2,0.91c0.54,0.61,0.81,1.47,0.81,2.6C59.66,13.64,59.39,14.52,58.85,15.12z"/>
-  <rect x="64.43" y="2.38" width="3.04" height="15.87" fill="#ffffff"/>
-  <rect x="69.21" y="9.01" width="3.04" height="3.04" fill="#ffffff"/>
-  <rect x="74.06" y="2.38" width="3.04" height="15.87" fill="#ffffff"/>
-  <path fill="#ffffff" d="M80.14,16.55c0.96,1.31,2.44,1.96,4.44,1.96c1.26,0,2.31-0.29,3.16-0.87c0.84-0.58,1.46-1.43,1.84-2.54
-    l-3.03-0.51c-0.17,0.58-0.41,1-0.74,1.26c-0.32,0.26-0.72,0.39-1.2,0.39c-0.7,0-1.28-0.25-1.75-0.75c-0.47-0.5-0.71-1.2-0.74-2.11
-    h7.62c0.04-2.33-0.43-4.06-1.42-5.19c-0.99-1.13-2.34-1.69-4.05-1.69c-1.52,0-2.78,0.54-3.78,1.62c-1,1.08-1.49,2.57-1.49,4.48
-    C79.01,14.18,79.39,15.5,80.14,16.55z M82.82,9.55c0.43-0.48,0.98-0.72,1.65-0.72c0.62,0,1.15,0.23,1.58,0.69
-    c0.43,0.46,0.66,1.13,0.68,2.01h-4.55C82.17,10.69,82.39,10.03,82.82,9.55z"/>
-  <path fill="#ffffff" d="M99.09,13.84c-0.15,0.8-0.41,1.37-0.78,1.7c-0.37,0.33-0.84,0.49-1.42,0.49c-0.77,0-1.39-0.28-1.85-0.85
-    c-0.46-0.56-0.69-1.53-0.69-2.89c0-1.23,0.23-2.1,0.68-2.63c0.45-0.52,1.06-0.79,1.81-0.79c0.57,0,1.04,0.15,1.39,0.45
-    c0.36,0.3,0.59,0.75,0.69,1.35l3-0.54c-0.36-1.24-0.95-2.15-1.78-2.75c-0.83-0.6-1.94-0.91-3.34-0.91c-1.71,0-3.07,0.53-4.07,1.59
-    c-1,1.06-1.51,2.54-1.51,4.43c0,1.88,0.5,3.35,1.5,4.41c1,1.06,2.34,1.59,4.02,1.59c1.48,0,2.66-0.35,3.54-1.05
-    c0.88-0.7,1.48-1.74,1.79-3.11L99.09,13.84z"/>
-  <path fill="#ffffff" d="M104.56,16.33c0.08,0.5,0.22,0.89,0.43,1.19c0.21,0.29,0.53,0.53,0.97,0.71c0.44,0.18,0.93,0.28,1.48,0.28
-    c0.89,0,1.69-0.15,2.4-0.45l-0.26-2.36c-0.53,0.19-0.94,0.29-1.22,0.29c-0.2,0-0.37-0.05-0.51-0.15c-0.14-0.1-0.23-0.23-0.27-0.39
-    c-0.04-0.15-0.06-0.7-0.06-1.64V9.18h2.08V6.75h-2.08V2.69l-3.05,1.78v2.28h-1.4v2.43h1.4v5.01
-    C104.46,15.27,104.5,15.98,104.56,16.33z"/>
-  <rect x="112.2" y="6.75" width="3.04" height="11.5" fill="#ffffff"/>
-  <rect x="112.2" y="2.38" width="3.04" height="2.81" fill="#ffffff"/>
-  <path fill="#ffffff" d="M128.02,18.25V6.75h-3.04v4.85c0,1.65-0.08,2.68-0.23,3.1c-0.15,0.42-0.44,0.78-0.85,1.06
-    c-0.41,0.29-0.87,0.43-1.39,0.43c-0.45,0-0.83-0.11-1.13-0.32c-0.29-0.21-0.5-0.5-0.61-0.86c-0.11-0.36-0.17-1.36-0.17-2.97V6.75
-    h-3.04v7.28c0,1.08,0.14,1.93,0.41,2.54c0.28,0.62,0.72,1.09,1.33,1.43c0.61,0.34,1.3,0.51,2.08,0.51c0.76,0,1.48-0.18,2.16-0.53
-    c0.68-0.35,1.23-0.84,1.65-1.45v1.72H128.02z"/>
-  <path fill="#ffffff" d="M140.55,11.81c0.34,0.12,0.66,0.34,0.96,0.66c0.3,0.32,0.87,1.1,1.69,2.33l2.32,3.45h3.83l-1.94-3.1
-    c-0.77-1.24-1.37-2.09-1.82-2.58c-0.45-0.48-1.02-0.93-1.72-1.33c1.39-0.2,2.44-0.69,3.14-1.47c0.7-0.77,1.05-1.76,1.05-2.95
-    c0-0.94-0.23-1.77-0.7-2.5c-0.46-0.73-1.08-1.24-1.84-1.52c-0.77-0.28-2-0.43-3.7-0.43h-6.74v15.87h3.2v-6.62h0.65
-    C139.68,11.62,140.21,11.69,140.55,11.81z M138.29,5.06h2.5c1.3,0,2.08,0.02,2.34,0.05c0.52,0.09,0.92,0.3,1.21,0.62
-    c0.29,0.33,0.43,0.76,0.43,1.29c0,0.48-0.11,0.87-0.33,1.19c-0.22,0.32-0.51,0.54-0.9,0.67c-0.38,0.13-1.34,0.2-2.88,0.2h-2.37V5.06
-    z"/>
-  <path fill="#ffffff" d="M155.14,6.49c-1.13,0-2.15,0.25-3.06,0.74c-0.91,0.5-1.62,1.22-2.12,2.17c-0.5,0.95-0.75,1.92-0.75,2.93
-    c0,1.32,0.25,2.44,0.75,3.36c0.5,0.92,1.22,1.62,2.18,2.09c0.96,0.48,1.96,0.71,3.02,0.71c1.7,0,3.12-0.57,4.24-1.72
-    c1.12-1.14,1.69-2.59,1.69-4.32c0-1.72-0.56-3.15-1.67-4.28C158.31,7.06,156.88,6.49,155.14,6.49z M157.15,15.12
-    c-0.54,0.61-1.2,0.91-2,0.91c-0.79,0-1.46-0.3-2-0.91c-0.54,0.61-0.81,1.48-0.81,2.62c0-1.14,0.27-2.01,0.81-2.62
-    c0.54-0.61,1.21-0.91,2-0.91c0.79,0,1.46,0.3,2,0.91c0.54,0.61,0.81,1.47,0.81,2.6C157.96,13.64,157.69,14.52,157.15,15.12z"/>
-  <path fill="#ffffff" d="M173.6,18.25v-7.15c0-0.89-0.05-1.57-0.17-2.05c-0.11-0.48-0.31-0.9-0.6-1.28c-0.28-0.37-0.71-0.68-1.26-0.92
-    c-0.56-0.24-1.17-0.36-1.84-0.36c-1.52,0-2.79,0.65-3.79,1.95V6.75h-2.83v11.5h3.04v-5.21c0-1.28,0.08-2.16,0.23-2.64
-    c0.16-0.48,0.44-0.86,0.86-1.15c0.42-0.29,0.89-0.43,1.42-0.43c0.41,0,0.76,0.1,1.06,0.3c0.29,0.2,0.5,0.48,0.63,0.85
-    c0.13,0.36,0.2,1.17,0.2,2.41v5.87H173.6z"/>
-  <path fill="#ffffff" d="M186.5,18.25V2.38h-3.04V8.1c-0.94-1.07-2.05-1.6-3.33-1.6c-1.4,0-2.56,0.51-3.48,1.52
-    c-0.92,1.01-1.38,2.49-1.38,4.44c0,1.91,0.47,3.39,1.41,4.46c0.94,1.06,2.07,1.6,3.39,1.6c0.65,0,1.29-0.16,1.93-0.48
-    c0.64-0.32,1.19-0.81,1.66-1.47v1.69H186.5z M182.73,15.22c-0.49,0.6-1.08,0.89-1.79,0.89c-0.88,0-1.57-0.4-2.06-1.19
-    c-0.34-0.55-0.51-1.44-0.51-2.66c0-1.14,0.24-2,0.73-2.57c0.49-0.57,1.09-0.86,1.81-0.86c0.74,0,1.35,0.29,1.83,0.87
-    c0.48,0.58,0.71,1.53,0.71,2.85C183.47,13.73,183.23,14.62,182.73,15.22z"/>
-  <path fill="#ffffff" d="M192.2,18.51c0.67,0,1.3-0.13,1.89-0.38c0.59-0.25,1.15-0.63,1.67-1.14c0.02,0.06,0.06,0.18,0.11,0.36
-    c0.12,0.4,0.21,0.7,0.29,0.9h3.01c-0.27-0.55-0.45-1.06-0.55-1.54c-0.1-0.48-0.15-1.23-0.15-2.23l0.03-3.55
-    c0-1.32-0.14-2.23-0.41-2.72c-0.27-0.49-0.74-0.9-1.4-1.22c-0.66-0.32-1.67-0.48-3.03-0.48c-1.49,0-2.62,0.27-3.38,0.8
-    c-0.76,0.53-1.29,1.36-1.6,2.47l2.76,0.5c0.19-0.53,0.43-0.91,0.74-1.12c0.3-0.21,0.72-0.32,1.27-0.32c0.8,0,1.35,0.13,1.64,0.37
-    c0.29,0.25,0.43,0.67,0.43,1.25v0.3c-0.55,0.23-1.54,0.48-2.96,0.75c-1.05,0.2-1.86,0.44-2.42,0.71c-0.56,0.27-0.99,0.66-1.3,1.17
-    c-0.31,0.51-0.46,1.09-0.46,1.74c0,0.98,0.34,1.79,1.02,2.44C190.09,18.19,191.02,18.51,192.2,18.51z M192.02,13.72
-    c0.26-0.17,0.81-0.35,1.66-0.53c0.85-0.18,1.46-0.33,1.85-0.47v0.61c0,0.73-0.04,1.22-0.12,1.48c-0.12,0.4-0.36,0.73-0.73,1.01
-    c-0.5,0.36-1.02,0.54-1.57,0.54c-0.49,0-0.9-0.15-1.21-0.47c-0.32-0.31-0.48-0.68-0.48-1.1C191.42,14.36,191.62,14.01,192.02,13.72z"/>
-</svg>
-`;
-
-const VIEWBOX_W = 200;
-const VIEWBOX_H = 20;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const ColectiuRondaLogoWhiteAnimated: React.FC<Props> = ({
   onDone,
-  width = Math.min(W, 420),
-  height = 160,
-  duration = 1200,
+  width = 360,
+  height = 86, // Adjusted to match SVG aspect ratio (200/20 = 360/36)
+  duration = 5200,
 }) => {
-  const svg = useSVG(COLECTIU_RONDA_SVG);
+  const animationRef = useRef<LottieView>(null);
 
-  // Animación con Reanimated
-  const t = useSharedValue(0); // 0→1
-
-  // Estados consumidos por Skia
-  const [opacity, setOpacity] = useState(0.2);
-  const [scale, setScale] = useState(0.92);
-  const [clipW, setClipW] = useState(0);
-  const [offsetY, setOffsetY] = useState(12);
+  // Calcular escala para llenar el contenedor manteniendo la proporción
+  const lottieCanvasWidth = 420;
+  const lottieCanvasHeight = 900;
+  const scale =
+    Math.min(width / lottieCanvasWidth, height / lottieCanvasHeight) * 9.5; // Increased scale for larger logo
+  const scaledWidth = lottieCanvasWidth * scale;
+  const scaledHeight = lottieCanvasHeight * scale;
+  const translateX = (width - scaledWidth) / 2;
+  const translateY = (height - scaledHeight) / 2;
 
   useEffect(() => {
-    t.value = withTiming(1, { duration, easing: Easing.out(Easing.cubic) });
-    const id = setTimeout(() => onDone?.(), duration + 180);
-    return () => clearTimeout(id);
-  }, [duration, onDone, t]);
+    console.log("Lottie component mounted, animationData:", !!animationData);
+    console.log("Scaled dimensions:", {
+      scaledWidth,
+      scaledHeight,
+      translateX,
+      translateY,
+    });
+    animationRef.current?.play();
 
-  useAnimatedReaction(
-    () => t.value,
-    (val) => {
-      runOnJS(setOpacity)(0.2 + 0.8 * val);
-      runOnJS(setScale)(0.92 + 0.08 * val);
-      runOnJS(setOffsetY)((1 - val) * 12);
-    },
-    []
-  );
+    const timeout = setTimeout(() => {
+      console.log("Lottie animation done, calling onDone");
+      onDone?.();
+    }, duration);
 
-  // Layout/logo
-  const targetW = width * 0.8;
-  const logoScale = targetW / VIEWBOX_W;
-  const logoW = VIEWBOX_W * logoScale;
-  const logoH = VIEWBOX_H * logoScale;
+    return () => clearTimeout(timeout);
+  }, [duration, onDone]);
 
-  const translateX = (width - logoW) / 2;
-  const translateY = (height - logoH) / 2;
-
-  useAnimatedReaction(
-    () => t.value,
-    (val) => runOnJS(setClipW)(logoW * val),
-    [logoW]
-  );
+  if (Platform.OS === "web") {
+    return (
+      <View style={[styles.container, { width, height }]}>
+        <Text style={styles.fallbackText}>Lottie not supported on web</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { width, height }]}>
-      <Canvas style={{ width, height }}>
-        <Rect x={0} y={0} width={width} height={height} color="#970c1f" />
-        {svg && (
-          <Group
-            transform={[
-              { translateX },
-              { translateY: translateY + offsetY },
-              { scale: scale },
-            ]}
-            opacity={opacity}
-          >
-            <Mask
-              mask={
-                <Rect x={0} y={0} width={clipW} height={logoH} color="white" />
-              }
-            >
-              {/* ⬇️ Aquí usamos ImageSVG en vez de {svg} */}
-              <Group transform={[{ scale: logoScale }]}>
-                <ImageSVG
-                  svg={svg}
-                  x={0}
-                  y={0}
-                  width={VIEWBOX_W}
-                  height={VIEWBOX_H}
-                />
-              </Group>
-            </Mask>
-          </Group>
-        )}
-      </Canvas>
+      <LottieView
+        ref={animationRef}
+        source={animationData}
+        style={{
+          width: scaledWidth,
+          height: scaledHeight,
+          transform: [{ translateX }, { translateY }],
+        }}
+        loop={false}
+        onAnimationFinish={() => {
+          console.log("Lottie animation finished");
+        }}
+      />
     </View>
   );
 };
@@ -185,9 +78,15 @@ const ColectiuRondaLogoWhiteAnimated: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
-    overflow: "hidden",
-    borderRadius: 16,
     backgroundColor: "#970c1f",
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  fallbackText: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: "50%",
   },
 });
 

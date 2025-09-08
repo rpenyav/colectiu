@@ -1,0 +1,18 @@
+{
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal",
+            "env": {
+                "API_BASE_URL": "http://demo.wad.cat:8480",
+                "USE_MOCK_LOGIN": "false"
+            }
+        },
+        "production": {
+            "env": {
+                "API_BASE_URL": "http://demo.wad.cat:8480",
+                "USE_MOCK_LOGIN": "false"
+            }
+        }
+    }
+}
